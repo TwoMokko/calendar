@@ -1,36 +1,35 @@
 class Calendar {
-    month;
-    year;
-    day;
+    $window_mini;
+    $month_mini;
+    $year_mini;
+    $calendar_mini;
+    $window;
+    $arrow_left;
+    $date;
+    $month;
+    $year;
+    $arrow_right;
+    $window_days;
 
-    constructor(month, year, day) {
-        this.month = month;
-        this.year = year;
-        this.day = day;
-    }
-
-    Display() {
+    constructor($window_mini, $month_mini, $year_mini, $calendar_mini, $window, $arrow_left, $date, $month, $year, $arrow_right, $window_days) {
 
         /* Elements */
-        let $window_mini = $('<div/>');
-        let $month_mini = $('<span/>');
-        let $year_mini = $('<span/>');
-        let $calendar_mini = $('<span/>');
-        let $window = $('<div/>');
-        let $arrow_left = $('<span/>');
-        let $date = $('<span/>');
-        let $month = $('<span/>');
-        let $year = $('<span/>');
-        let $arrow_right = $('<span/>');
-        let $window_days = $('<div/>');
+        this.$window = $('<div/>');
+        this.$arrow_left = $('<span/>');
+        this.$date = $('<span/>');
+        this.$month = $('<span/>');
+        this.$year = $('<span/>');
+        this.$arrow_right = $('<span/>');
+        this.$window_days = $('<div/>');
+        this.$window_mini = $('<div/>');
+        this.$month_mini = $('<span/>');
+        this.$year_mini = $('<span/>');
+        this.$calendar_mini = $('<span/>');
 
         /* Other */
-        $month.text(this.month);
-        $year.text(this.year);
 
         /* Events */
-
-
+        $calendar_mini.on('click', this.DoEdit);
 
         /* Building DOM */
         $window_mini.append(
@@ -49,6 +48,7 @@ class Calendar {
             $window_days
         )
     }
+
 
     OnEdit(){};
 
