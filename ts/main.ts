@@ -14,17 +14,17 @@ class Calendar {
     constructor($window_mini, $month_mini, $year_mini, $calendar_mini, $window, $arrow_left, $date, $month, $year, $arrow_right, $window_days) {
 
         /* Elements */
-        this.$window = $('<div/>');
+        this.$window_mini = $('<div/>');
+        this.$month_mini = $('<span/>');
+        this.$year_mini = $('<span/>');
+        this.$calendar_mini = $('<span/>');
+        this.$window = $('<div/>', {class: 'hide'});
         this.$arrow_left = $('<span/>');
         this.$date = $('<span/>');
         this.$month = $('<span/>');
         this.$year = $('<span/>');
         this.$arrow_right = $('<span/>');
         this.$window_days = $('<div/>');
-        this.$window_mini = $('<div/>');
-        this.$month_mini = $('<span/>');
-        this.$year_mini = $('<span/>');
-        this.$calendar_mini = $('<span/>');
 
         /* Other */
 
