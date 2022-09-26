@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang = "ru">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -8,8 +8,13 @@
     <script type="text/javascript" src="https://time.inteh.tech/plugins/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+    <input type = "number" value = "1965" name = "year" class = "my">
+<!--    <input type = "number" value = "2005" name = "ivan">-->
+<!--    <input type = "n    umber" value = "2007" name = "petya">-->
     <script>
-        new Game();
+        $(function() {
+            new CalendarYear('input.my', {min: 1000, max: 2030});
+        });
     </script>
 </body>
 </html>
