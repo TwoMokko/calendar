@@ -1,0 +1,8 @@
+body { text-align: center; }
+div { background-color: cadetblue; height: 300px; width: 300px; display: flex; flex-wrap: wrap; margin: 0 auto;
+  span {background-color: darkgray; height: 100px; width: 100px; outline: 1px solid brown}
+}
+input { background-color: cadetblue; border: none; margin: 10px; padding: 5px 10px; }
+
+span[data-state='1'] { background-color: darkgreen }
+span[data-state='2'] { background-color: khaki }
