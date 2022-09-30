@@ -29,7 +29,7 @@ class Game {
 
 		/* Elements */
 		this.$game = $('<div/>');
-		this.$start = $('<input/>', {type: 'button', value: 'Начать игру'});
+		this.$start = $('<input/>', {type: 'button', value: ''});
 		this.$fields = [];
 		for (let i = 0; i < 3; i++) {
 			this.$fields[i] = [];
@@ -95,12 +95,12 @@ class Game {
 
 		let _end = '';
 
-		if ((this.m[i][0] === 1 && this.m[i][1] === 1 && this.m[i][2] === 1) || (this.m[0][j] === 1 && this.m[1][j] === 1 && this.m[2][j] === 1) || (this.m[0][0] === 1 && this.m[1][1] === 1 && this.m[2][2] === 1) || (this.m[0][2] === 1 && this.m[1][1] === 1 && this.m[2][0] === 1)) _end = 'Выиграл первый игрок';
-		else if ((this.m[i][0] === 2 && this.m[i][1] === 2 && this.m[i][2] === 2) || (this.m[0][j] === 2 && this.m[1][j] === 2 && this.m[2][j] === 2) || (this.m[0][0] === 2 && this.m[1][1] === 2 && this.m[2][2] === 2) || (this.m[0][2] === 2 && this.m[1][1] === 2 && this.m[2][0] === 2)) _end = 'Выиграл второй игрок';
-		else if (CheckDeadHeat(this.m)) _end = 'Ничья';
+		if ((this.m[i][0] === 1 && this.m[i][1] === 1 && this.m[i][2] === 1) || (this.m[0][j] === 1 && this.m[1][j] === 1 && this.m[2][j] === 1) || (this.m[0][0] === 1 && this.m[1][1] === 1 && this.m[2][2] === 1) || (this.m[0][2] === 1 && this.m[1][1] === 1 && this.m[2][0] === 1)) _end = 'first';
+		else if ((this.m[i][0] === 2 && this.m[i][1] === 2 && this.m[i][2] === 2) || (this.m[0][j] === 2 && this.m[1][j] === 2 && this.m[2][j] === 2) || (this.m[0][0] === 2 && this.m[1][1] === 2 && this.m[2][2] === 2) || (this.m[0][2] === 2 && this.m[1][1] === 2 && this.m[2][0] === 2)) _end = 'second';
+		else if (CheckDeadHeat(this.m)) _end = 'draw';
 
 		if (_end) {
-			this.$win_text.text(_end);
+			this.$win_text.addClass(_end);
 			this.$win_text.css('display', 'block');
 			this.state = this.player['end'];
 		}
