@@ -1,13 +1,14 @@
 class Game {
-	field_val;
-	m;
-	player;
-	state;
+	field_val		: {empty: 0, x: 1, o: 2};
+	m				: number[][];
+	player			: {first: 1, second: 2, end: 0};
+	state			: number;
 
-	$start;
-	$fields;
-	$game;
-	$win_text;
+	$start			:JQuery;
+	$fields			:JQuery[][];
+	$game			:JQuery;
+	$space			:JQuery;
+	$win_text		:JQuery;
 
 	constructor() {
 		this.player = {
@@ -28,7 +29,8 @@ class Game {
 		this.state = this.player['first'];
 
 		/* Elements */
-		this.$game = $('<div/>');
+		this.$game = $('<div/>', {class: 'game'});
+		this.$space = $('<div/>');
 		this.$start = $('<input/>', {type: 'button', value: ''});
 		this.$fields = [];
 		for (let i = 0; i < 3; i++) {
@@ -40,19 +42,21 @@ class Game {
 		this.$win_text = $('<span/>').css('display', 'none');
 		/* Events */
 		this.$start.on('click', this.Start.bind(this));
-		this.$game.on('click', 'span', this.Turn.bind(this));
+		this.$space.on('click', 'span', this.Turn.bind(this));
 
 		/* Building DOM */
-		for (let i = 0; i < 3; i++) this.$game.prepend(this.$fields[i]);
+		for (let i = 0; i < 3; i++) this.$space.prepend(this.$fields[i]);
 
 		$('body').append(
-			this.$game,
-			this.$win_text,
-			this.$start
+			this.$game.append(
+				this.$space,
+				this.$win_text,
+				this.$start
+			)
 		);
 	}
 
-	Start() {
+	Start(): void {
 		for (let i = 0; i < 3; i++) {
 			for (let j = 0; j < 3; j++) {
 				this.m[i][j] = 0;
@@ -63,17 +67,17 @@ class Game {
 		this.$win_text.css('display', 'none');
 	}
 
-	Redraw(i, j) {
+	Redraw(i: number, j: number): void {
 		// let attr = 'empty';
 		// if (state === this.field_val['x']) attr = 'x';
 		// if (state === this.field_val['o']) attr = 'o';
 		this.$fields[i][j].attr('data-state', this.m[i][j]);
 	}
 
-	Turn(e) {
+	Turn(e): void {
 		let element = $(e.currentTarget);
-		let i = element.attr('data-i');
-		let j = element.attr('data-j');
+		let i = parseInt(element.attr('data-i'));
+		let j = parseInt(element.attr('data-j'));
 
 		if (this.m[i][j]) return;
 
@@ -97,7 +101,7 @@ class Game {
 
 		if ((this.m[i][0] === 1 && this.m[i][1] === 1 && this.m[i][2] === 1) || (this.m[0][j] === 1 && this.m[1][j] === 1 && this.m[2][j] === 1) || (this.m[0][0] === 1 && this.m[1][1] === 1 && this.m[2][2] === 1) || (this.m[0][2] === 1 && this.m[1][1] === 1 && this.m[2][0] === 1)) _end = 'first';
 		else if ((this.m[i][0] === 2 && this.m[i][1] === 2 && this.m[i][2] === 2) || (this.m[0][j] === 2 && this.m[1][j] === 2 && this.m[2][j] === 2) || (this.m[0][0] === 2 && this.m[1][1] === 2 && this.m[2][2] === 2) || (this.m[0][2] === 2 && this.m[1][1] === 2 && this.m[2][0] === 2)) _end = 'second';
-		else if (CheckDeadHeat(this.m)) _end = 'draw';
+		else if (CheckDraw(this.m)) _end = 'draw';
 
 		if (_end) {
 			this.$win_text.addClass(_end);
@@ -105,7 +109,7 @@ class Game {
 			this.state = this.player['end'];
 		}
 
-		function CheckDeadHeat(m): boolean {
+		function CheckDraw(m: any): boolean {
 			for (let i = 0; i < 3; i++) {
 				for (let j = 0; j < 3; j++) {
 					if (m[i][j] === 0) return false;

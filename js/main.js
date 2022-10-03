@@ -18,7 +18,8 @@ class Game {
         ];
         this.state = this.player['first'];
         /* Elements */
-        this.$game = $('<div/>');
+        this.$game = $('<div/>', { class: 'game' });
+        this.$space = $('<div/>');
         this.$start = $('<input/>', { type: 'button', value: '' });
         this.$fields = [];
         for (let i = 0; i < 3; i++) {
@@ -30,11 +31,11 @@ class Game {
         this.$win_text = $('<span/>').css('display', 'none');
         /* Events */
         this.$start.on('click', this.Start.bind(this));
-        this.$game.on('click', 'span', this.Turn.bind(this));
+        this.$space.on('click', 'span', this.Turn.bind(this));
         /* Building DOM */
         for (let i = 0; i < 3; i++)
-            this.$game.prepend(this.$fields[i]);
-        $('body').append(this.$game, this.$win_text, this.$start);
+            this.$space.prepend(this.$fields[i]);
+        $('body').append(this.$game.append(this.$space, this.$win_text, this.$start));
     }
     Start() {
         for (let i = 0; i < 3; i++) {
@@ -54,8 +55,8 @@ class Game {
     }
     Turn(e) {
         let element = $(e.currentTarget);
-        let i = element.attr('data-i');
-        let j = element.attr('data-j');
+        let i = parseInt(element.attr('data-i'));
+        let j = parseInt(element.attr('data-j'));
         if (this.m[i][j])
             return;
         if (this.state === this.player['end'])
@@ -76,14 +77,14 @@ class Game {
             _end = 'first';
         else if ((this.m[i][0] === 2 && this.m[i][1] === 2 && this.m[i][2] === 2) || (this.m[0][j] === 2 && this.m[1][j] === 2 && this.m[2][j] === 2) || (this.m[0][0] === 2 && this.m[1][1] === 2 && this.m[2][2] === 2) || (this.m[0][2] === 2 && this.m[1][1] === 2 && this.m[2][0] === 2))
             _end = 'second';
-        else if (CheckDeadHeat(this.m))
+        else if (CheckDraw(this.m))
             _end = 'draw';
         if (_end) {
             this.$win_text.addClass(_end);
             this.$win_text.css('display', 'block');
             this.state = this.player['end'];
         }
-        function CheckDeadHeat(m) {
+        function CheckDraw(m) {
             for (let i = 0; i < 3; i++) {
                 for (let j = 0; j < 3; j++) {
                     if (m[i][j] === 0)
@@ -91,6 +92,116 @@ class Game {
                 }
             }
             return true;
+        }
+    }
+}
+class Snake {
+    constructor() {
+        this.states = {
+            empty: 0,
+            snake: 1,
+            apple: 2,
+        };
+        this.moves = {
+            up: 1,
+            down: 2,
+            left: 3,
+            right: 4
+        };
+        this.snake = [];
+        this.apple = [];
+        this.$field = [];
+        this.$game = $('<div/>', { class: 'snake' });
+        this.$space = $('<div/>');
+        $('body').append(this.$game.append(this.$space));
+        this.Restructure(10);
+        this.RedrawSpace();
+        this.DrawSnake();
+        this.DrawApple();
+        this.MoveSnake();
+    }
+    Restructure(size) {
+        this.size = size;
+        this.space = [];
+        for (let i = 0; i < this.size; i++) {
+            this.space[i] = [];
+            for (let j = 0; j < this.size; j++) {
+                this.space[i][j] = this.states['empty'];
+            }
+        }
+        this.move = this.moves['right'];
+        let head = { y: this.size / 2, x: this.size / 2 };
+        let tail = { y: this.size / 2, x: this.size / 2 - 1 };
+        this.snake.push([head.y, head.x]);
+        this.snake.push([tail.y, tail.x]);
+        this.space[head.y][head.x] = this.states['snake'];
+        this.space[tail.y][tail.x] = this.states['snake'];
+        let apple = this.GetApple();
+        this.apple = [apple[0], apple[1]];
+        this.space[apple[0]][apple[1]] = this.states['apple'];
+    }
+    GetApple() {
+        let y, x;
+        while (true) {
+            y = Math.floor(Math.random() * this.size);
+            x = Math.floor(Math.random() * this.size);
+            if (this.space[y][x] === this.states['empty'])
+                break;
+        }
+        return [y, x];
+    }
+    RedrawSpace() {
+        this.$space.css({
+            width: `${this.size * 30}px`,
+            height: `${this.size * 30}px`
+        });
+        for (let i = 0; i < this.size; i++) {
+            this.$field[i] = [];
+            for (let j = 0; j < this.size; j++) {
+                this.$field[i][j] = $('<span/>', { 'data-state': this.states['empty'], 'data-i': i, 'data-j': j });
+            }
+        }
+        for (let i = 0; i < this.size; i++)
+            this.$space.prepend(this.$field[i]);
+    }
+    DrawSnake() {
+        for (let i = 0; i < this.snake.length; i++)
+            this.$field[this.snake[i][0]][this.snake[i][1]].attr({ 'data-state': this.states['snake'] });
+    }
+    DrawApple() {
+        this.$field[this.apple[0]][this.apple[1]].attr({ 'data-state': this.states['apple'] });
+    }
+    MoveSnake() {
+        let self = this;
+        for (let i = 0; i < this.snake.length; i++)
+            this.$field[this.snake[i][0]][this.snake[i][1]].attr({ 'data-state': this.states['empty'] });
+        for (let i = this.snake.length - 1; i > 0; i--) {
+            this.snake[i][0] = this.snake[i - 1][0];
+            this.snake[i][1] = this.snake[i - 1][1];
+        }
+        let yx = GetMoveHead();
+        this.snake[0][0] = yx[0];
+        this.snake[0][1] = yx[1];
+        this.DrawSnake();
+        function GetMoveHead() {
+            let y, x;
+            y = self.snake[0][0];
+            x = self.snake[0][1];
+            switch (self.move) {
+                case self.moves['right']:
+                    x++;
+                    break;
+                case self.moves['left']:
+                    x--;
+                    break;
+                case self.moves['up']:
+                    y--;
+                    break;
+                case self.moves['down']:
+                    y++;
+                    break;
+            }
+            return [y, x];
         }
     }
 }
