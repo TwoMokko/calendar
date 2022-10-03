@@ -118,7 +118,7 @@ class Snake {
         this.RedrawSpace();
         this.DrawSnake();
         this.DrawApple();
-        this.MoveSnake();
+        setInterval(this.MoveSnake.bind(this), 5000);
     }
     Restructure(size) {
         this.size = size;
@@ -172,6 +172,7 @@ class Snake {
         this.$field[this.apple[0]][this.apple[1]].attr({ 'data-state': this.states['apple'] });
     }
     MoveSnake() {
+        console.log(this.snake);
         let self = this;
         for (let i = 0; i < this.snake.length; i++)
             this.$field[this.snake[i][0]][this.snake[i][1]].attr({ 'data-state': this.states['empty'] });
