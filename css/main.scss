@@ -28,5 +28,6 @@ body {
         &[data-state='2'] { background-color: brown; }
       }
     }
+    > input { height: 30px; width: 100px; background-color: cadetblue; border: none; margin: 10px; padding: 5px 10px; }
   }
 }

@@ -9,6 +9,8 @@ class Snake {
 	$field		: JQuery[][];
 	$space		: JQuery;
 	$game		: JQuery;
+	$start		:JQuery;
+	stop		: number;
 
 	constructor() {
 		this.states = {
@@ -24,20 +26,27 @@ class Snake {
 		};
 		this.snake = [];
 		this.apple = [];
+
+		/* Elements */
 		this.$field = [];
 		this.$game = $('<div/>', {class: 'snake'});
 		this.$space = $('<div/>');
+		this.$start = $('<input/>', { type: 'button', value: 'Начать игру' });
+
+		/* Events */
+		this.$start.on('click', this.Start.bind(this));
+
+		/* Building DOM */
 		$('body').append(
 			this.$game.append(
-				this.$space
+				this.$space,
+				this.$start
 			)
 		);
 
 		this.Restructure(10);
 		this.RedrawSpace();
-		this.DrawSnake();
-		this.DrawApple();
-		setInterval(this.MoveSnake.bind(this), 5000);
+		this.Start();
 	}
 
 	Restructure(size) {
@@ -102,13 +111,19 @@ class Snake {
 
 	MoveSnake() {console.log(this.snake);
 		let self = this;
-		for (let i = 0; i < this.snake.length; i++)	this.$field[this.snake[i][0]][this.snake[i][1]].attr({'data-state': this.states['empty']});
-		for (let i = this.snake.length - 1; i > 0; i--) {
-			this.snake[i][0] = this.snake[i-1][0];
-			this.snake[i][1] = this.snake[i-1][1];
-		}
 
 		let yx = GetMoveHead();
+		if ( (yx[0] < 0) || (yx[0] >= this.size) || (yx[1] < 0) || (yx[1] >= this.size) || (this.space[yx[0]][yx[1]] === this.states['snake']) ) {
+			this.GameOver();
+			return;
+		}
+
+		for (let i = 0; i < this.snake.length; i++)	this.$field[this.snake[i][0]][this.snake[i][1]].attr({'data-state': this.states['empty']});
+		for (let i = this.snake.length - 1; i > 0; i--) {
+				this.snake[i][0] = this.snake[i-1][0];
+				this.snake[i][1] = this.snake[i-1][1];
+		}
+
 		this.snake[0][0] = yx[0];
 		this.snake[0][1] = yx[1];
 		this.DrawSnake();
@@ -125,5 +140,43 @@ class Snake {
 			}
 			return [y,x];
 		}
+	}
+
+	Start() {
+		for (let i = 0; i < this.size; i++) {
+			for (let j = 0; j < this.size; j++) {
+				this.space[i][j] = this.states['empty'];
+				this.$field[i][j].attr('data-state', this.states['empty']);
+			}
+		}
+		this.snake.length = 0;
+
+		this.move = this.moves['right'];
+
+		let head = {y: this.size / 2, x: this.size / 2};
+		let tail = {y: this.size / 2, x: this.size / 2 - 1};
+
+		this.snake.push([head.y, head.x]);
+		this.snake.push([tail.y, tail.x]);
+
+		this.space[head.y][head.x] = this.states['snake'];
+		this.space[tail.y][tail.x] = this.states['snake'];
+
+		let apple = this.GetApple();
+		this.apple = [apple[0], apple[1]];
+		this.space[apple[0]][apple[1]] = this.states['apple'];
+
+		this.DrawSnake();
+		this.DrawApple();
+
+
+		clearInterval(this.stop);
+		this.stop = setInterval(this.MoveSnake.bind(this), 1000);
+
+	}
+
+	GameOver() {
+		clearInterval(this.stop);
+		alert ('Игра окончена');
 	}
 }
