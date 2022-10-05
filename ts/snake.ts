@@ -35,6 +35,7 @@ class Snake {
 
 		/* Events */
 		this.$start.on('click', this.Start.bind(this));
+		$(document).on('keydown', this.Move.bind(this));
 
 		/* Building DOM */
 		$('body').append(
@@ -109,23 +110,36 @@ class Snake {
 		this.$field[this.apple[0]][this.apple[1]].attr({'data-state': this.states['apple']});
 	}
 
-	MoveSnake() {console.log(this.snake);
+	MoveSnake() {
 		let self = this;
 
 		let yx = GetMoveHead();
+		console.log(yx);
 		if ( (yx[0] < 0) || (yx[0] >= this.size) || (yx[1] < 0) || (yx[1] >= this.size) || (this.space[yx[0]][yx[1]] === this.states['snake']) ) {
 			this.GameOver();
 			return;
 		}
+		if (this.space[yx[0]][yx[1]] === this.states['apple']) {
+			this.snake.push([this.snake[this.snake.length - 1][0], this.snake[this.snake.length - 1][1]]);
+			let apple = this.GetApple();
+			this.apple = [apple[0], apple[1]];
+			this.space[apple[0]][apple[1]] = this.states['apple'];
+			this.DrawApple();
+		}
 
-		for (let i = 0; i < this.snake.length; i++)	this.$field[this.snake[i][0]][this.snake[i][1]].attr({'data-state': this.states['empty']});
+		for (let i = 0; i < this.snake.length; i++)	{
+			this.space[this.snake[i][0]][this.snake[i][1]] = this.states['empty'];
+			this.$field[this.snake[i][0]][this.snake[i][1]].attr({'data-state': this.states['empty']});
+		}
 		for (let i = this.snake.length - 1; i > 0; i--) {
-				this.snake[i][0] = this.snake[i-1][0];
-				this.snake[i][1] = this.snake[i-1][1];
+			this.snake[i][0] = this.snake[i-1][0];
+			this.snake[i][1] = this.snake[i-1][1];
+			this.space[this.snake[i][0]][this.snake[i][1]] = this.states['snake'];
 		}
 
 		this.snake[0][0] = yx[0];
 		this.snake[0][1] = yx[1];
+		this.space[yx[0]][yx[1]] = this.states['snake'];
 		this.DrawSnake();
 
 		function GetMoveHead() {
@@ -135,8 +149,8 @@ class Snake {
 			switch (self.move) {
 				case self.moves['right']: x++; break;
 				case self.moves['left']: x--; break;
-				case self.moves['up']: y--; break;
-				case self.moves['down']: y++; break;
+				case self.moves['up']: y++; break;
+				case self.moves['down']: y--; break;
 			}
 			return [y,x];
 		}
@@ -171,8 +185,18 @@ class Snake {
 
 
 		clearInterval(this.stop);
-		this.stop = setInterval(this.MoveSnake.bind(this), 1000);
+		this.stop = setInterval(this.MoveSnake.bind(this), 300);
 
+	}
+
+	Move(e) {
+		let arrow = { left: 37, up: 38, right: 39, down: 40 };
+		switch (e.keyCode) {
+			case arrow.right : if (this.move !== this.moves['left']) this.move = this.moves['right']; break;
+			case arrow.left : if (this.move !== this.moves['right']) this.move = this.moves['left']; break;
+			case arrow.up : if (this.move !== this.moves['down']) this.move = this.moves['up']; break;
+			case arrow.down : if (this.move !== this.moves['up']) this.move = this.moves['down']; break;
+		}
 	}
 
 	GameOver() {
