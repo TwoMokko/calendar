@@ -11,6 +11,10 @@ class Snake {
 	$game		: JQuery;
 	$start		:JQuery;
 	stop		: number;
+	$choice		:JQuery;
+	$size10;
+	$size50;
+	$size100;
 
 	constructor() {
 		this.states = {
@@ -32,6 +36,10 @@ class Snake {
 		this.$game = $('<div/>', {class: 'snake'});
 		this.$space = $('<div/>');
 		this.$start = $('<input/>', { type: 'button', value: 'Начать игру' });
+		this.$choice = $('<select/>');
+		this.$size10 = $('<option/>');
+		this.$size50 = $('<option/>');
+		this.$size100 = $('<option/>');
 
 		/* Events */
 		this.$start.on('click', this.Start.bind(this));
@@ -41,7 +49,12 @@ class Snake {
 		$('body').append(
 			this.$game.append(
 				this.$space,
-				this.$start
+				this.$start,
+				this.$choice.append(
+					this.$size10.text('10'),
+					this.$size50.text('50'),
+					this.$size100.text('100')
+				)
 			)
 		);
 
